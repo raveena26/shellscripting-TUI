@@ -1,0 +1,97 @@
+#!/bin/bash
+
+basic()
+
+{
+dialog --menu  "LEVEL 0:BASIC COMMANDS" 16  65  13 1 "Display the current DATE" 2 "Display calendar" 3 "Show contents of current folder" 4 "Open firefox" 5 "Install any Package" 6 "Uninstall a package" 7 "check the Ip address" 8 "open calculator" 9 "Show present Working Directory" 10 "Reboot system" 11 "ShutDown System" 12 "To know whether the package is installed or not" 13 "Back to main menu" 2>/tmp/m.txt
+num=`cat /tmp/m.txt`
+
+	if [ $num == 1 ]
+	then
+		dialog  --infobox  "`date`" 5  60
+		sleep 2
+		basic
+	elif [ $num == 2 ]
+	then
+		dialog  --infobox  "`cal`" 10  60
+		sleep 2
+		basic
+	elif [ $num == 3 ]
+	then
+
+		dialog  --msgbox  "CURRENT DIRECTORY files nd folders `ls`" 20  60
+		sleep 2
+		basic
+	elif [ $num == 4 ]
+	then
+
+		firefox
+		basic
+	elif [ $num == 5 ]
+	then
+			
+		dialog --inputbox "enter package name" 10 20 2>/tmp/p.txt
+		c=`cat /tmp/p.txt`
+		yum install $c -y > /dev/null
+		basic
+	elif [ $num == 6 ]
+	then
+
+		dialog --inputbox "enter package name" 10 20 2>/tmp/p.txt
+		c=`cat /tmp/p.txt`
+		yum remove $c -y >/dev/null
+		basic
+	elif [ $num == 7 ]
+	then
+
+		dialog  --infobox  "`ifconfig`" 20  90
+		sleep 3
+		basic
+	elif [ $num == 8 ]
+	then
+
+		gcalctool
+		basic
+	elif [ $num == 9 ]
+	then
+
+		dialog  --infobox  "`pwd`" 5  60
+		sleep 2
+		basic
+	elif [ $num == 10 ]
+	then
+		
+		init 6
+	elif [ $num == 11 ]
+	then
+
+		init 0
+	elif [ $num == 12 ]
+	then
+
+		dialog --inputbox "enter package name" 10 20 2>/tmp/p.txt
+		c=`cat /tmp/p.txt`
+		`rpm -q $c`
+	f=`echo $?`
+		if  [ $f -eq 0 ]
+		then
+		dialog  --infobox  "The package  is installed" 8  80
+		sleep 2
+		basic
+		else
+		dialog  --infobox  "`rpm -q $c`" 5  60
+		sleep 2
+		basic
+		fi
+	elif [ $num == 13 ]
+	then
+		bash menu.sh
+	
+else
+	dialog  --infobox "GoodBye" 5 60
+	fi
+
+}
+basic
+
+
