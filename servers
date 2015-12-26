@@ -1,0 +1,149 @@
+#!/bin/bash
+serv()
+{
+
+	dialog   --menu "LEVEL 8:MANAGING SERVERS" 16  65  9  1 "Install and configure Apache server" 2 "Install and configure Telnet-server" 3 "Install mysql-server" 4 "Install and configure Mail-server" 5 "Install and configure NFS-server" 6 "Install and configure FTP-server" 7 "Install and configure Samba-server" 8 "Install and configure NIS-server" 9 "Back to main menu" 2>/tmp/m.txt
+	m=`cat /tmp/m.txt`
+
+
+
+
+
+	if [ $m == 1 ]
+	then
+
+		yum install httpd -y >/dev/null
+		service httpd restart >/dev/null
+		setenforce 0 
+		iptables -F
+		chkconfig httpd on >/dev/null
+
+
+		dialog  --infobox "Apache Installed and Ready to use.Open Browser and Enter the Ip" 5  90
+		sleep 3
+
+		serv
+
+
+	elif [ $m == 2  ]
+	then
+		yum install telnet-server -y >/dev/null
+		sed -i 's/yes/no/' /etc/xinetd.d/telnet
+		service xinetd restart >/dev/null
+		dialog  --infobox "Telnet server ready to Operate." 5  60
+		sleep 2
+		dialog  --infobox "CLIENT-SIDE MESSAGE:open terminal and type telnet server's ip address and login" 10  90
+		sleep 4
+		serv	
+
+	elif [ $m == 0  ]
+	then
+		yum install mysql-server -y >/dev/null
+		yum install mysql -y >/dev/null
+		service mysqld restart >/dev/null
+		dialog  --infobox "Mysql Installed and Ready to use" 5  60
+		sleep 2
+		serv
+
+
+
+
+	elif [ $m == 4  ]
+	then
+		yum install postfix -y >/dev/null
+		service postfix restart > /dev/null
+		chkconfig postfix on
+		dialog  --infobox "Mail Server Installed and Ready to use" 5  60
+		sleep 2
+		dialog --inputbox "Enter the account name u want to send mail and End the mail body with 'ctrl+d'" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		mail $a
+		dialog  --infobox "Mail to $a successful" 5  60
+		sleep 2
+		serv
+
+
+	elif [ $m == 5 ]
+	then
+		yum install nfs-utils -y >/dev/null
+		service nfs restart >/dev/null
+		dialog --inputbox "Specify the Directory with pathname u want to share " 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		echo "$a   127.0.0.1(rw,sync)" >> /etc/exports
+		chmod o+w $a
+		exportfs -r
+		dialog  --infobox "Directory Shared" 5  60
+		sleep 2
+
+		mkdir /media/nfshare
+		mount 127.0.0.1:$a /media/nfshare
+		dialog  --infobox "Client-side message:check on desktop to see the shared directory" 5  90
+		sleep 4
+
+		
+
+		serv
+
+	elif [ $m == 6  ]
+	then
+		yum install vsftpd -y >/dev/null
+		service vsftpd restart >/dev/null
+		dialog  --infobox "FTP Server Installed and Ready to Operate" 5  60
+		sleep 2
+		dialog  --infobox "CLIENT SIDE MESSAGE-Open firefox and enter this url- ftp://Raveena@127.0.0.1 and Enter password r" 10  60
+		sleep 4
+		
+		serv
+
+
+
+	elif [ $m == 7  ]
+	then
+		dialog --inputbox "Specify the username u want to make samba" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		dialog --inputbox "Set Password for the user " 20 70 2> /tmp/c.txt
+		b=`cat /tmp/c.txt`
+		dialog --inputbox "Specify directory path to be shared " 20 70 2> /tmp/p.txt
+		c=`cat /tmp/p.txt`
+		yum install samba -y >/dev/null
+		echo "[shnm]
+		path = $c
+		valid users = $a 
+		bind interfaces only = yes " >> /etc/samba/smb.conf
+		useradd -s /sbin/nologin $a
+		echo "$b" | smbpasswd -a $a --stdin
+		service smb restart >/dev/null
+		
+		
+		yum install cifs-utils -y
+		mkdir /media/smshare
+		mount -o username=$a //127.0.0.1/shnm  /media/smshare
+		dialog --infobox "Client Side Message:Check on Desktop to see the shared Directory " 20 70 
+		sleep 4
+		serv	
+		
+
+	elif [ $m == 8 ]
+	then
+
+		yum install ypserv -y >/dev/null
+		dialog --inputbox "Enter the Domain Name of your server " 20 70 2> /tmp/p.txt
+		c=`cat /tmp/p.txt`
+		nisdomainname $c
+		service ypserv restart >/dev/null
+		cd /var/yp/
+		make
+
+		serv
+	elif [ $m == 9 ]
+	then
+		bash menu.sh
+
+
+	else
+		dialog  --infobox "GOODBYE " 5 60
+	fi
+}
+
+serv
+
