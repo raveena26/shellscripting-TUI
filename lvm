@@ -1,0 +1,66 @@
+#!/bin/bash
+lv()
+{
+
+	dialog --menu  "LEVEL 6 :LOGICAL VOLUME MANAGEMENT" 16  65  4  1 "Create LVM"  2 "extend LVM"  3 "Reduce LVM" 4 "Back to main Menu" 2>/tmp/pp.txt
+	n=`cat /tmp/pp.txt`
+
+	if [ $n == 1 ]
+	then
+
+		umount /dev/sda5 >/dev/null
+		umount /dev/sda7 >/dev/null
+		pvcreate /dev/sda5 /dev/sda7 >/dev/null
+		vgcreate lwvg /dev/sda5 /dev/sda7 >/dev/null
+		dialog --inputbox "Enter name of your Logical Volume" 20 60 2>/tmp/pp.txt
+		a=`cat /tmp/pp.txt`
+		dialog --inputbox "Enter size of your Logical Volume in MB" 20 60 2>/tmp/pp.txt
+		b=`cat /tmp/pp.txt`
+		lvcreate --name $a --size $b lwvg >/dev/null
+		mkfs.ext4 /dev/lwvg/$a >/dev/null
+		mkdir /media/$a
+
+		mount /dev/lwvg/$a  /media/$a >/dev/null
+		dialog --infobox "LVM CREATED SEE ON DESKTOP" 10 50
+		sleep 2
+		lv
+
+	elif [ $n == 2 ]
+	then
+
+
+		dialog --inputbox "Enter size to be extended" 20 60 2>/tmp/pp.txt
+		c=`cat /tmp/pp.txt`
+		lvextend --size +$c /dev/lwvg/$a >/dev/null
+		resize2fs /dev/lwvg/$a >/dev/null
+		dialog --infobox "LVM EXTENDED SEE ON DESKTOP" 10 50
+		sleep 2
+
+		lv
+	elif [ $n == 3 ]
+	then
+
+		dialog --inputbox "Enter size to be Saved(if u want to reduce lvm) in MB" 20 60 2>/tmp/pp.txt
+		e=`cat /tmp/pp.txt`
+		umount /dev/lwvg/$a
+		e2fsck  -f /dev/lwvg/$a >/dev/null
+		resize2fs /dev/lwvg/$a $e >/dev/null
+		mkdir /media/$a"1"
+		echo "y" | lvreduce --size $e /dev/lwvg/$a  >/dev/null
+		mount /dev/lwvg/$a /media/$a"1"
+		dialog --infobox "LVM REDUCED SEE ON DESKTOP" 10 50
+		sleep 2
+
+		lv
+
+	elif [ $n == 4 ]
+	then
+		bash menu.sh
+
+	else
+		dialog  --infobox "GOODBYE " 5 60
+	fi
+}
+
+lv
+
