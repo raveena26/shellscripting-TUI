@@ -1,0 +1,46 @@
+#!/bin/bash
+part()
+{
+
+	dialog --menu  "LEVEL 5 :PARTITION" 16  65  3  1 "List the existing partions"  2 "Create Partition"  3 "Back to Main Menu" 2>/tmp/pp.txt
+	n=`cat /tmp/pp.txt`
+
+
+	if [ $n  == 1 ]
+	then
+		fdisk -cul>/tmp/list.txt
+		dialog --textbox /tmp/list.txt 30 90
+		part
+
+	elif [ $n == 2 ]
+	then
+		dialog --inputbox "Enter the serial number of partition u are going to create from the above table" 10 60 2>/tmp/d.txt
+		a=`cat /tmp/d.txt`
+		dialog --inputbox "Enter the size of the partition in G,Mor K" 10 60 2>/tmp/d.txt
+		b=`cat /tmp/d.txt`
+		echo -e "\nn\n\n+$b\nw\n"|fdisk -cu /dev/sda >/dev/null
+
+
+
+		partx -a /dev/sda >/dev/null
+		partx -a /dev/sda >/dev/null
+
+		mkfs.ext4 /dev/sda$a >/dev/null	
+		mkdir /media/pp$a >/dev/null
+		mount /dev/sda$a /media/pp$a >/dev/null
+		dialog --infobox "PARTITION CREATED SEE ON DESKTOP" 5 60
+		sleep 2
+		part
+	elif [ $n == 3 ]
+	then
+		bash menu.sh
+
+	else
+		dialog --infobox "GOODBYE" 5 60
+		sleep 2
+	fi
+
+}
+
+part
+
