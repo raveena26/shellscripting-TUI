@@ -1,0 +1,57 @@
+#!/bin/bash
+
+	
+	dialog   --menu "SELECT YOUR LEVEL TO LEARN AND IMPLEMENT" 16  65  10  1 "LEVEL 0 : Basic Commands" 2 "LEVEL 1 : File Operations" 3 "LEVEL 2 : Directory Operations" 4 "LEVEL 3 : User Management" 5 "LEVEL 4 : Permissions" 6 "LEVEL 5 : Partitions" 7 "LEVEL 6 : Logical Volume Management" 8 "LEVEL 7 : Managing Swap Partition" 9 "LEVEL 8 : Managing Servers" 10 "EXIT" 2>/tmp/m.txt
+
+	num=`cat /tmp/m.txt`
+
+
+
+
+	if [ $num == 1 ]
+	then
+		bash basic.sh
+
+	elif [ $num == 2 ]
+	then
+		bash file.sh
+
+	elif [ $num == 3 ]
+	then
+		bash directory.sh
+
+
+
+	elif [ $num == 4 ]
+	then
+		bash usermanag.sh
+
+
+	elif [ $num == 5 ]
+	then
+		bash permissions.sh
+
+	elif [ $num == 6 ]
+	then
+		bash partition.sh
+	elif [ $num == 7 ]
+	then
+		bash lvm.sh
+
+	elif [ $num == 8 ]
+	then
+		bash swap.sh
+	elif [ $num == 9 ]
+	then
+		bash Servers.sh
+	elif [ $num == 10 ]
+	then
+	dialog --infobox "	THANK YOU ...!!!" 5 60
+	sleep 2
+	killall gnome-terminal	
+
+	else
+	dialog  --infobox "GOODBYE " 5 60
+	fi
+	
+
