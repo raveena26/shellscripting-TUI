@@ -1,0 +1,60 @@
+#!/bin/bash
+sw()
+
+{
+
+	dialog --menu  "LEVEL 7 :SWAP PARTITION" 16  65  5  1 "MAKE SWAP"  2 "CHECK RAM SPACE" 3 "MAKE SWAP OFF" 4 "MAKE SWAP ON" 5 "Back to Main Menu" 2>/tmp/pp.txt
+	n=`cat /tmp/pp.txt`
+
+	if [ $n  == 1 ]
+	then
+		dialog --inputbox "Enter Partition Number to make swap" 20 60 2>/tmp/d.txt
+		a=`cat /tmp/d.txt`
+		dialog --inputbox "Enter the size of the Swap in G,Mor K" 10 60 2>/tmp/d.txt
+		b=`cat /tmp/d.txt`
+		echo -e "\nn\n\n+$b\nw\n"|fdisk -cu /dev/sda >/dev/null
+
+		partx -a /dev/sda >/dev/null
+		partx -a /dev/sda > /dev/null
+		mkswap /dev/sda$a
+		swapon /dev/sda$a
+
+		dialog --infobox "SWAP ADDED TO RAM" 5 60
+		sleep 2
+		sw
+
+	elif [ $n  == 2 ]
+	then
+
+		free -m >/tmp/p.txt
+		dialog --textbox /tmp/p.txt 30 90
+		sw
+
+	elif [ $n  == 3 ]
+	then
+
+		dialog --inputbox "Enter Partition Number to make swap Off" 20 60 2>/tmp/d.txt
+		s=`cat /tmp/d.txt`
+		swapoff /dev/sda$s 
+		sw
+
+	elif [ $n  == 4 ]
+	then
+
+		dialog --inputbox "Enter Partition Number to make swap On" 20 60 2>/tmp/d.txt
+		s=`cat /tmp/d.txt`
+		swapon /dev/sda$s 
+		sw
+	elif [ $n == 5 ]
+	then
+		bash menu.sh
+
+	else
+		dialog --infobox "GOODBYE" 5 60
+		sleep 2
+	fi
+
+}
+
+sw
+
