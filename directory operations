@@ -1,0 +1,99 @@
+#!/bin/bash
+dir1()
+{
+
+dialog   --menu "LEVEL 2 : DIRECTORY OPERATIONS" 16  65  7 1 "Create the Directory" 2 "Delete the Directory" 3 "Open the Directory " 4 "Copy the Directory to another location" 5 "Move the Directory to another location" 6 "Rename the Directory" 7 "BACK TO MAIN MENU" 2>/tmp/d.txt
+c=`cat /tmp/d.txt`
+
+	
+
+	if [ $c == 1 ]
+	then
+		dialog --inputbox "Please specify the Directory name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Specify the path for directory" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+		mkdir $b/$a
+		dialog  --infobox "Directory created" 5 60
+		sleep 2
+		dir1
+
+	elif [ $c == 2 ]
+	then
+		dialog --inputbox "Please specify the Directory name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Specify the path for directory" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+		rmdir $b/$a
+		dialog  --infobox "Directory deleted" 5 60
+		sleep 2
+		dir1
+
+	elif [ $c == 3 ]
+	then
+		dialog --inputbox "Please specify the Directory name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Specify the path for directory" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+		nautilus $b/$a
+		dir1
+
+	elif [ $c == 4 ]
+	then
+		dialog --inputbox "Please specify the Directory name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Specify the path for directory" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+		dialog  --inputbox "Enter another location where u want to copy the directory" 10 70 2>/tmp/fle.txt
+		d=`cat /tmp/fle.txt`
+		mkdir $d/$a
+		cp $b/$a/* $d/$a/
+		dialog  --infobox "Directory copied" 5 60
+		sleep 2
+		dir1
+
+	elif [ $c == 5 ]
+	then
+		dialog --inputbox "Please specify the Directory name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Specify the path for directory" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+		dialog  --inputbox "Enter another location where u want to move the directory" 10 70 2>/tmp/fle.txt
+		d=`cat /tmp/fle.txt`
+		mkdir $d/$a
+		mv $b/$a/* $d/$a/
+		rmdir $b/$a
+		dialog  --infobox "Directory moved" 5 60
+		dir1
+
+	elif [ $c == 6 ]
+	then
+		dialog --inputbox "Please specify the Directory name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Specify the path for directory" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+		dialog  --inputbox "Enter new name of Directory" 10 70 2>/tmp/fle.txt
+		e=`cat /tmp/fle.txt`
+		mkdir $b/$e
+		mv $b/$a/* $b/$e/
+		rmdir $b/$a
+		dialog  --infobox "Directory renamed" 5 60
+		dir1
+
+	elif [ $c == 7 ]
+	then
+		bash menu.sh
+
+	else
+		dialog  --infobox "GOODBYE" 5 50
+	fi
+}
+
+dir1
+
