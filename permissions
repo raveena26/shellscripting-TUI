@@ -1,0 +1,138 @@
+#!/bin/bash
+perm()
+{
+
+	dialog --menu  "LEVEL 4:PERMISSIONS" 16 90 11 1 "See the inode table of any file" 2 "See the inode table of any directory" 3 "Give owner/group/other permissions to file or Directoy" 4 "Remove owner/group/other permissions to file or Directoy" 5 "Change owner for any file or directory" 6 "Change group for any file or Directory" 7 "Give any account individual permission to file or Directory" 8 "Make any Directory or file to execute with the power of root" 9 "Set Guid for any Directory" 10 "Enable sticky bit for any Directory" 11 "Back to main menu" 2>/tmp/m.txt
+	p=`cat /tmp/m.txt`
+
+	if [ $p == 1 ]
+	then
+		dialog --inputbox "Enter the file name" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		ls -l $a > /tmp/p.txt
+		dialog --textbox /tmp/p.txt 40 70
+		perm
+
+
+
+
+	elif [ $p == 2 ]
+	then
+		dialog --inputbox "Enter the Directory name" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		ls -ld $a > /tmp/p.txt
+		dialog --textbox /tmp/p.txt 40 70
+		perm
+
+
+
+	elif [ $p == 3 ]
+	then
+		dialog --inputbox "Specify the File or Directory Name along with path" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		dialog --menu  "Select to whom u want to give permissions" 40  70 3 s "Owner"  g "Group" o "Other" 2>/tmp/c.txt
+		b=`cat /tmp/c.txt`
+		dialog --menu  "Select what permissions u want to give" 40  70 3 r "Read"  w "Write" x "Execute" 2>/tmp/p.txt
+		c=`cat /tmp/p.txt`
+		chmod  $b+$c  $a
+		dialog --infobox "Permissions Granted" 10 60 
+		sleep 2
+
+		perm
+	elif [ $p == 4 ]
+	then
+		dialog --inputbox "Specify the File or Directory Name along with path" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		dialog --menu  "Select from whom u want to remove permissions" 40  70 3 s "Owner"  g "Group" o "Other" 2>/tmp/c.txt
+		b=`cat /tmp/c.txt`
+		dialog --menu  "Select what permissions u want to remove" 40  70 3 r "Read"  w "Write" x "Execute" 2>/tmp/p.txt
+		c=`cat /tmp/p.txt`
+		chmod  $b-$c  $a
+		dialog --infobox "Permissions Removed" 10 60 
+		sleep 2
+
+		perm
+	elif [ $p == 5 ]
+	then
+		dialog --inputbox "Specify the File or Directory Name along with path" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		dialog --inputbox  "Enter the name of the owner" 20  70 2>/tmp/c.txt
+		b=`cat /tmp/c.txt`
+		chown $b  $a
+		dialog --infobox "Owner Changed" 10 60 
+		sleep 2
+
+		perm
+
+
+	elif [ $p == 6 ]
+	then
+		dialog --inputbox "Specify the File or Directory Name along with path" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		dialog --inputbox  "Enter the name of the group" 20  70 2>/tmp/c.txt
+		b=`cat /tmp/c.txt`
+		chgrp $b  $a
+		dialog --infobox "Group Changed" 10 60 
+		sleep 2
+
+		perm
+	elif [ $p == 7 ]
+	then
+		dialog --inputbox "Account name" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		dialog --menu  "Select what permissions u want to give" 40  70 3 r "Read"  w "Write" x "Execute" 2>/tmp/p.txt
+		b=`cat /tmp/p.txt`
+		dialog --inputbox  "Enter the name of the file or directory" 20  70 2>/tmp/c.txt
+		c=`cat /tmp/c.txt`
+		setfacl -m u:$a:$b  $c
+		dialog --infobox "Permission Allotted" 10 60 
+		sleep 2
+
+		perm
+
+	elif [ $p == 8 ]
+	then
+		dialog --inputbox "Specify the Directory Name along with path" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		chmod u+s $a
+		dialog --infobox "Power of root Granted" 10 60 
+		sleep 2
+
+		perm
+
+
+
+	elif [ $p == 9 ]
+	then
+		dialog --inputbox "Specify the Directory Name along with path" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		chmod g+s $a
+		dialog --infobox "Group ID Applied to the Directory" 10 60 
+		sleep 2
+
+		perm
+
+
+	elif [ $p == 10 ]
+	then
+		dialog --inputbox "Specify Directory Name along with path" 20 70 2> /tmp/m.txt
+		a=`cat /tmp/m.txt`
+		chmod +t $a
+		dialog --infobox "Sticky bit Applied" 10 60 
+		sleep 2
+
+		perm
+
+	elif [ $p == 11 ]
+	then
+		bash menu.sh
+
+	else
+		dialog  --infobox "GoodBye" 5 60
+	fi
+
+}
+
+
+perm
+
