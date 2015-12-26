@@ -1,0 +1,137 @@
+#!/bin/bash
+usr()
+{
+
+dialog   --menu "LEVEL 3 :USER MANAGEMENT" 16  65  10 1 "List of existing users" 2 "Add a user" 3 "Delete a user" 4 "Assign Password to user" 5 "Login into any account" 6 "Add a group" 7 "Delete a group" 8 "Assign Password to a group" 9 "Add Member to some group" 10 "list groups nd members" 11 "Back to Main Menu" 2>/tmp/d.txt
+n=`cat /tmp/d.txt`
+
+
+	if [ $n == 1 ]
+	then
+		cut -d: -f1 /etc/passwd > /tmp/list.txt
+		dialog --textbox /tmp/list.txt 30 70
+		usr
+
+
+	elif [ $n == 2 ]
+	then
+		dialog --inputbox  "Enter the name of the user you want to add" 20 70 2>/tmp/d.txt
+		a=`cat /tmp/d.txt`
+
+		useradd $a
+
+		dialog --infobox "User Added" 5 60
+		sleep 2
+
+
+		dialog --passwordbox  "Enter the password u Want to assign" 20 70  2>/tmp/f.txt
+		b=`cat /tmp/f.txt`
+		echo "$b" | passwd $a --stdin
+		dialog --infobox "Password Assigned" 5 60
+		sleep 2
+		usr
+
+
+	elif [ $n == 3 ]
+	then
+		dialog --inputbox "Enter the name of the user you want to delete" 20 70 2>/tmp/f.txt
+		c=`cat /tmp/f.txt`
+		userdel $c
+		dialog --infobox "User Deleted" 5 60
+		sleep 2
+		usr
+
+
+	elif [ $n == 4 ]
+	then
+		dialog --inputbox "Enter name of user u want to assign password" 20 70 2>/tmp/f.txt
+		d=`cat /tmp/f.txt`
+		dialog --passwordbox "Enter password for $d" 20 70 2>/tmp/f.txt
+		e=`cat /tmp/f.txt`
+		echo "$e" | passwd $d --stdin
+		dialog --infobox "Password Assigned" 5 60
+		sleep 2
+		usr
+
+	elif [ $n == 5 ]
+	then
+		dialog --inputbox "Enter the name of the user u want to login into" 20 70 2>/tmp/f.txt
+		f=`cat /tmp/f.txt`
+		su - $f >/dev/null
+		dialog   --yesno "LOGGED IN Want to Logout"  5  40
+		h=`echo  $?`
+			if  [ $h -eq 0 ]
+			then
+				logout
+				usr
+			else
+				usr
+			fi
+	elif [ $n == 6 ]
+	then
+		dialog --inputbox "Enter the name of the group you want to add" 20 70 2>/tmp/f.txt
+		a1=`cat /tmp/f.txt`
+		groupadd $a1
+		dialog --infobox "Group added" 5 50
+		sleep 2
+		dialog --passwordbox "Enter the password u Want to assign" 20 70 2>/tmp/f.txt
+		b1=`cat /tmp/f.txt`
+		echo "$b1" | gpasswd $a1 --stdin
+		dialog --infobox "Group Password Assigned" 5 60
+		sleep 2
+		usr
+
+	elif [ $n == 7 ]
+	then
+		dialog --inputbox "Enter the name of the group you want to delete" 20 70 2>/tmp/f.txt
+		c1=`cat /tmp/f.txt`
+		groupdel $c1
+		dialog --infobox "Group deleted" 5 60
+		sleep 2
+		usr
+
+
+	elif [ $n == 8 ]
+	then
+		dialog --inputbox "Enter name of group u want to assign password" 20 70 2>/tmp/f.txt
+		d1=`cat /tmp/f.txt`
+		dialog --passwordbox "Enter password for $d1" 20 70 2>/tmp/f.txt
+		e1=`cat /tmp/f.txt`
+		echo "$e1" | gpasswd $d --stdin
+		dialog --infobox "Group Password Assigned" 5 60
+		sleep 2
+		usr
+
+
+	elif [ $n == 9 ]
+	then
+		dialog --inputbox "Enter user name to be added to the group" 20 70 2>/tmp/f.txt
+		u1=`cat /tmp/f.txt`
+		dialog --inputbox "Enter group name in which the user is to b added" 20 70 2>/tmp/f.txt
+		g1=`cat /tmp/f.txt`
+		usermod -G $g1 $u1
+		dialog --infobox "User added to Group" 5 60
+		sleep 2
+		usr
+
+	elif [ $n == 10 ]
+	then
+		cut -d: -f1,4 /etc/group > /tmp/list.txt
+		dialog --textbox /tmp/list.txt 30 70
+		usr
+
+
+	elif [ $n == 11 ]
+	then
+		bash menu.sh
+
+	else
+		dialog --infobox "GOODBYE" 5 60
+		sleep 2
+
+	fi	
+
+}
+
+usr
+
