@@ -1,0 +1,103 @@
+#!/bin/bash
+
+file1()
+
+{
+
+dialog   --menu "LEVEL 1 : FILE OPERATIONS" 16  65  7  1 "Create the file " 2 "Delete the file" 3 "Edit the file" 4 "Copy the file to another location" 5 "Move the file to another location" 6 "Rename the file" 7 "Back to Main Menu" 2>/tmp/f.txt
+c=`cat /tmp/f.txt`
+	
+
+	if [ $c == 1 ]
+	then	
+		dialog --inputbox "Enter the file name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Please Specify the Path" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+		> $b/$a.txt
+		dialog  --infobox "File Created" 5 60
+		sleep 2
+		file1
+
+	elif [ $c == 2 ]
+	then
+		dialog --inputbox "Enter the file name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Please Specify the Path" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+		rm $b/$a.txt
+		dialog  --infobox "File Deleted" 5 60
+		sleep 2
+		file1
+
+	elif [ $c == 3 ]
+	then
+		dialog --inputbox "Enter the file name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Please Specify the Path" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+		gedit $b/$a.txt
+		dialog  --infobox "Edit Successful" 5 60
+		sleep 2
+		file1
+
+	elif [ $c == 4 ]
+	then
+		dialog --inputbox "Enter the file name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Please Specify the Path" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+
+		dialog --inputbox "Enter another location where u want to copy the file" 10 70 2>/tmp/fe.txt
+		d=`cat /tmp/fe.txt`
+		cp $b/$a.txt $d/$a.txt
+		dialog  --infobox "File Copied" 5 60
+		sleep 2
+		file1
+
+	elif [ $c == 5 ]
+	then
+
+		dialog --inputbox "Enter the file name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Please Specify the Path" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+
+		dialog --inputbox "Enter another location where u want to move the file"  10 70 2>/tmp/fe.txt
+		d=`cat /tmp/fe.txt`
+		mv $b/$a.txt $d/$a.txt
+		dialog  --infobox "File Moved" 5 60
+		sleep 2
+		file1
+
+	elif [ $c == 6 ]
+	then
+		dialog --inputbox "Enter the file name" 5 50 2>/tmp/fle.txt
+		a=`cat /tmp/fle.txt`
+		dialog --inputbox "Please Specify the Path" 5 50 2>/tmp/fle.txt
+		b=`cat /tmp/fle.txt`
+
+
+
+		dialog --inputbox "Enter new name of file" 10 50 2>/tmp/fe.txt
+		e=`cat /tmp/fe.txt`
+		mv $b/$a.txt $b/$e.txt
+		dialog  --infobox "File Renamed" 5 60
+		sleep 2
+		file1
+
+	elif [ $c == 7 ]
+	then
+		bash menu.sh
+
+	else
+		dialog  --infobox "GOODBYE" 5 60
+fi
+}
+file1	
+
